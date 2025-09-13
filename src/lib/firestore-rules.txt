@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+    
+    function isCollaborator(ownerUid, profileId) {
+      return exists(/databases/$(database)/documents/users/$(ownerUid)/profiles/$(profileId)/collaborators/$(request.auth.uid));
+    }
+    
+    function getCollaboratorRole(ownerUid, profileId) {
+      return get(/databases/$(database)/documents/users/$(ownerUid)/profiles/$(profileId)/collaborators/$(request.auth.uid)).data.role;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow write: if isAuthenticated() && isOwner(userId);
+      
+      // Profiles subcollection
+      match /profiles/{profileId} {
+        allow read: if isAuthenticated() && (isOwner(userId) || (profileId == 'business' && isCollaborator(userId, profileId)));
+        allow write: if isAuthenticated() && isOwner(userId);
+        
+        // Transactions subcollection
+        match /transactions/{transactionId} {
+          allow read: if isAuthenticated() && (isOwner(userId) || (profileId == 'business' && isCollaborator(userId, profileId)));
+          allow create: if isAuthenticated() && (isOwner(userId) || (profileId == 'business' && isCollaborator(userId, profileId) && getCollaboratorRole(userId, profileId) in ['editor', 'admin']));
+          allow update: if isAuthenticated() && (isOwner(userId) || (profileId == 'business' && isCollaborator(userId, profileId) && getCollaboratorRole(userId, profileId) in ['editor', 'admin']));
+          allow delete: if isAuthenticated() && (isOwner(userId) || (profileId == 'business' && isCollaborator(userId, profileId) && getCollaboratorRole(userId, profileId) == 'admin'));
+        }
+        
+        // Categories subcollection
+        match /categories/{categoryId} {
+          allow read: if isAuthenticated() && (isOwner(userId) || (profileId == 'business' && isCollaborator(userId, profileId)));
+          allow write: if isAuthenticated() && (isOwner(userId) || (profileId == 'business' && isCollaborator(userId, profileId) && getCollaboratorRole(userId, profileId) in ['editor', 'admin']));
+        }
+        
+        // Collaborators subcollection (business profiles only)
+        match /collaborators/{collaboratorId} {
+          allow read: if isAuthenticated() && (isOwner(userId) || collaboratorId == request.auth.uid);
+          allow create: if isAuthenticated() && (isOwner(userId) || (isCollaborator(userId, profileId) && getCollaboratorRole(userId, profileId) == 'admin'));
+          allow update: if isAuthenticated() && (isOwner(userId) || (isCollaborator(userId, profileId) && getCollaboratorRole(userId, profileId) == 'admin'));
+          allow delete: if isAuthenticated() && isOwner(userId);
+        }
+      }
+    }
+    
+    // Username lookup collection
+    match /users_by_username/{username} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+  }
+}

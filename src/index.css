@@ -1,0 +1,360 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Premium Expense Manager Design System - Atomic Design */
+
+@layer base {
+  :root {
+    /* Core Colors */
+    --background: 220 14% 96%;
+    --foreground: 220 9% 4%;
+    --background-secondary: 0 0% 100%;
+    
+    /* Personal Theme (Blue/Teal) */
+    --personal-primary: 211 100% 56%;
+    --personal-primary-dark: 199 100% 48%;
+    --personal-accent: 187 92% 42%;
+    --personal-gradient: linear-gradient(135deg, hsl(211 100% 56%), hsl(187 92% 42%));
+    
+    /* Business Theme (Orange/Red) */
+    --business-primary: 14 100% 63%;
+    --business-primary-dark: 35 100% 50%;
+    --business-accent: 14 90% 55%;
+    --business-gradient: linear-gradient(135deg, hsl(14 100% 63%), hsl(35 100% 50%));
+    
+    /* Neutral Colors */
+    --card: 0 0% 100%;
+    --card-foreground: 220 9% 4%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 8.9% 46.1%;
+    
+    /* Status Colors */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    
+    /* UI Elements */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 211 100% 56%;
+    
+    /* Glass Effect */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-glow: 0 0 20px rgba(30, 136, 255, 0.2);
+    
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius: 0.75rem;
+    --radius-lg: 1.25rem;
+    --radius-full: 9999px;
+    
+    /* Transitions */
+    --transition-fast: 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    --transition-base: 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    --transition-slow: 350ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    
+    /* Z-Index */
+    --z-base: 0;
+    --z-dropdown: 10;
+    --z-sticky: 20;
+    --z-fixed: 30;
+    --z-modal-backdrop: 40;
+    --z-modal: 50;
+    --z-popover: 60;
+    --z-tooltip: 70;
+    
+    /* Active Theme Variables (Personal by default) */
+    --primary: 211 100% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 9% 4%;
+    --accent: 187 92% 42%;
+    --accent-foreground: 0 0% 100%;
+    --theme-gradient: var(--personal-gradient);
+  }
+  
+  /* Business Theme */
+  [data-theme="business"] {
+    --primary: 14 100% 63%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 35 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --theme-gradient: var(--business-gradient);
+    --ring: 14 100% 63%;
+  }
+  
+  .dark {
+    --background: 220 15% 10%;
+    --foreground: 0 0% 98%;
+    --background-secondary: 220 15% 13%;
+    
+    --card: 220 15% 13%;
+    --card-foreground: 0 0% 98%;
+    --muted: 220 14% 18%;
+    --muted-foreground: 220 8% 60%;
+    
+    --border: 220 13% 20%;
+    --input: 220 13% 20%;
+    
+    --glass-bg: rgba(13, 17, 23, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+  
+  /* Glass Morphism Base */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+    border-radius: var(--radius);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20;
+    border-radius: var(--radius);
+    transition: var(--transition-base);
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
+  }
+}
+
+@layer components {
+  /* Button Variants */
+  .btn-gradient {
+    background: var(--theme-gradient);
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-base);
+  }
+  
+  .btn-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left var(--transition-slow);
+  }
+  
+  .btn-gradient:hover::before {
+    left: 100%;
+  }
+  
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+  }
+  
+  /* Card Hover Effect */
+  .card-hover {
+    transition: all var(--transition-base);
+  }
+  
+  .card-hover:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+  }
+  
+  /* Category Ring Progress */
+  .ring-progress {
+    position: relative;
+    display: inline-flex;
+  }
+  
+  .ring-progress svg {
+    transform: rotate(-90deg);
+  }
+  
+  .ring-progress-bg {
+    stroke: hsl(var(--muted));
+    fill: none;
+  }
+  
+  .ring-progress-fill {
+    stroke: url(#gradient);
+    fill: none;
+    stroke-linecap: round;
+    transition: stroke-dashoffset var(--transition-slow);
+  }
+  
+  /* Skeleton Loader */
+  .skeleton {
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted) / 0.5) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+  }
+  
+  @keyframes skeleton-loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+  
+  /* Pulse Animation */
+  .pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+  
+  /* FAB Button */
+  .fab {
+    @apply fixed bottom-4 right-4 sm:bottom-6 sm:right-6 rounded-full shadow-xl z-fixed;
+    background: var(--theme-gradient);
+    transition: all var(--transition-base);
+  }
+  
+  .fab:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-xl), var(--shadow-glow);
+  }
+  
+  .fab:active {
+    transform: scale(0.95);
+  }
+  
+  /* Tooltip */
+  .tooltip {
+    @apply absolute z-tooltip px-2 py-1 text-xs rounded;
+    @apply bg-foreground text-background;
+    @apply pointer-events-none opacity-0 transition-opacity;
+    @apply -translate-y-2;
+  }
+  
+  .tooltip-trigger:hover .tooltip {
+    @apply opacity-100 translate-y-0;
+  }
+}
+
+@layer utilities {
+  /* Text Gradient */
+  .text-gradient {
+    background: var(--theme-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+  }
+  
+  /* Backdrop Blur Utilities */
+  .backdrop-blur-xs {
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+  
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  
+  .backdrop-blur-md {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  
+  .backdrop-blur-lg {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+  
+  /* Animation Utilities */
+  .animate-slide-up {
+    animation: slide-up var(--transition-base) ease-out;
+  }
+  
+  @keyframes slide-up {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in var(--transition-slow) ease-out;
+  }
+  
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .animate-scale-in {
+    animation: scale-in var(--transition-base) ease-out;
+  }
+  
+  @keyframes scale-in {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}

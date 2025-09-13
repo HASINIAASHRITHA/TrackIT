@@ -267,23 +267,55 @@ export const createProfileIfNotExists = async (uid: string, profileId: 'personal
 // Transaction functions
 export const addTransaction = async (uid: string, profileId: string, transaction: Omit<Transaction, 'id'>) => {
   try {
-    console.log('addTransaction called with:', { uid, profileId, transaction });
+    console.log('🚀 addTransaction called with:', { uid, profileId, transaction });
+    
+    // Verify authentication
+    if (!auth.currentUser) {
+      throw new Error('User not authenticated - no current user');
+    }
+    
+    if (auth.currentUser.uid !== uid) {
+      throw new Error(`User mismatch: auth.currentUser.uid (${auth.currentUser.uid}) !== provided uid (${uid})`);
+    }
+    
+    console.log('✅ Authentication verified for user:', auth.currentUser.uid);
     
     // Ensure profile exists first
+    console.log('🔧 Creating profile if not exists...');
     await createProfileIfNotExists(uid, profileId as 'personal' | 'business');
     
+    // Verify profile was created
+    const profileRef = doc(db, COLLECTIONS.USERS, uid, COLLECTIONS.PROFILES, profileId);
+    const profileDoc = await getDoc(profileRef);
+    if (!profileDoc.exists()) {
+      throw new Error(`Profile document was not created for ${profileId}`);
+    }
+    console.log('✅ Profile verified:', profileDoc.data());
+    
     const transactionsRef = collection(db, COLLECTIONS.USERS, uid, COLLECTIONS.PROFILES, profileId, COLLECTIONS.TRANSACTIONS);
-    console.log('Collection path:', `${COLLECTIONS.USERS}/${uid}/${COLLECTIONS.PROFILES}/${profileId}/${COLLECTIONS.TRANSACTIONS}`);
+    console.log('📁 Collection path:', `${COLLECTIONS.USERS}/${uid}/${COLLECTIONS.PROFILES}/${profileId}/${COLLECTIONS.TRANSACTIONS}`);
+    
     const newDocRef = doc(transactionsRef);
     const transactionData = {
       ...transaction,
       date: serverTimestamp(),
       createdBy: uid
     };
-    console.log('Final transaction data:', transactionData);
-    return await setDoc(newDocRef, transactionData);
+    console.log('📄 Final transaction data to be saved:', transactionData);
+    
+    console.log('💾 Attempting to save transaction...');
+    const result = await setDoc(newDocRef, transactionData);
+    console.log('✅ Transaction saved successfully, result:', result);
+    
+    return result;
   } catch (error) {
-    console.error('addTransaction error:', error);
+    console.error('🚨 addTransaction error:', error);
+    console.error('🚨 Error details:', {
+      name: (error as Error).name,
+      message: (error as Error).message,
+      code: (error as any).code,
+      stack: (error as Error).stack
+    });
     throw error;
   }
 };

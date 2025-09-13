@@ -67,6 +67,75 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const [attachments, setAttachments] = useState<File[]>([]);
   const [uploadedUrls, setUploadedUrls] = useState<Array<{ url: string; public_id?: string }>>([]);
 
+  // Test function to auto-fill form for debugging
+  const fillTestData = () => {
+    console.log('🧪 Filling test data...');
+    console.log('Available categories:', categories);
+    const firstCategory = categories[0];
+    if (firstCategory) {
+      setFormData({
+        amount: '1000',
+        type: 'expense',
+        categoryId: firstCategory.id,
+        description: 'Test transaction',
+        date: getISTDate(),
+        tags: '',
+        project: '',
+        client: '',
+      });
+      console.log('✅ Test data filled with category:', firstCategory);
+    } else {
+      console.log('❌ No categories available for test');
+    }
+  };
+
+  // Test Firebase connectivity
+  const testFirebaseConnection = async () => {
+    console.log('🔥 Testing Firebase connection...');
+    try {
+      if (!user) {
+        console.log('❌ No user authenticated');
+        return;
+      }
+
+      console.log('👤 Current user:', { uid: user.uid, email: user.email });
+      console.log('📋 Profile ID:', profileId);
+      
+      // Test if we can read from Firestore
+      const { db, COLLECTIONS } = await import('@/lib/firebase');
+      const { doc, getDoc } = await import('firebase/firestore');
+      
+      const userRef = doc(db, COLLECTIONS.USERS, user.uid);
+      const userDoc = await getDoc(userRef);
+      
+      console.log('📄 User document exists:', userDoc.exists());
+      if (userDoc.exists()) {
+        console.log('📄 User data:', userDoc.data());
+      }
+
+      // Test profile access
+      const profileRef = doc(db, COLLECTIONS.USERS, user.uid, COLLECTIONS.PROFILES, profileId);
+      const profileDoc = await getDoc(profileRef);
+      
+      console.log('👤 Profile document exists:', profileDoc.exists());
+      if (profileDoc.exists()) {
+        console.log('👤 Profile data:', profileDoc.data());
+      }
+
+      toast({
+        title: 'Firebase Test',
+        description: 'Check console for connection details',
+      });
+    } catch (error) {
+      console.error('🚨 Firebase connection error:', error);
+      toast({
+        title: 'Firebase Test Failed',
+        description: `Error: ${(error as Error).message}`,
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     setAttachments(prev => [...prev, ...files]);
@@ -98,10 +167,21 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    
+    console.log('=== FORM SUBMISSION START ===');
+    console.log('User:', user);
+    console.log('Profile ID:', profileId);
+    console.log('Form Data:', formData);
+    console.log('Categories prop:', categories);
+    
+    if (!user) {
+      console.log('❌ No user - aborting');
+      return;
+    }
 
     // Validation
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
+      console.log('❌ Invalid amount:', formData.amount);
       toast({
         title: 'Invalid amount',
         description: 'Please enter a valid amount greater than 0.',
@@ -111,6 +191,8 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
     }
 
     if (!formData.categoryId) {
+      console.log('❌ No category selected');
+      console.log('Available categories:', categories);
       toast({
         title: 'Category required',
         description: 'Please select a category for this transaction.',
@@ -120,6 +202,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
     }
 
     if (!formData.description.trim()) {
+      console.log('❌ No description provided');
       toast({
         title: 'Description required',
         description: 'Please enter a description for this transaction.',
@@ -128,12 +211,28 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
       return;
     }
 
+    console.log('✅ All validations passed, setting loading');
     setLoading(true);
     
     try {
       // Upload attachments if any
       if (attachments.length > 0 && uploadedUrls.length === 0) {
+        console.log('📎 Uploading attachments...');
         await handleUpload();
+      }
+
+      // Create metadata object, filtering out empty values
+      const metadata: any = {
+        tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(t => t.length > 0) : [],
+      };
+      
+      // Only add project and client if they have actual values
+      if (formData.project && formData.project.trim()) {
+        metadata.project = formData.project.trim();
+      }
+      
+      if (formData.client && formData.client.trim()) {
+        metadata.client = formData.client.trim();
       }
 
       const transaction = {
@@ -148,18 +247,15 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
           ...url,
           provider: 'cloudinary' as const,
         })),
-        metadata: {
-          tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
-          project: formData.project || undefined,
-          client: formData.client || undefined,
-        },
+        metadata,
       };
 
-      console.log('Submitting transaction:', transaction);
-      console.log('User ID:', user.uid);
-      console.log('Profile ID:', profileId);
+      console.log('📤 Submitting transaction to Firebase:', transaction);
+      console.log('👤 User ID:', user.uid);
+      console.log('📋 Profile ID:', profileId);
       
-      await addTransaction(user.uid, profileId, transaction);
+      const result = await addTransaction(user.uid, profileId, transaction);
+      console.log('✅ Firebase result:', result);
       
       toast({
         title: 'Transaction added',
@@ -183,13 +279,24 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
       setAttachments([]);
       setUploadedUrls([]);
     } catch (error: any) {
-      console.error('Transaction error:', error);
+      console.error('🚨 TRANSACTION ERROR DETAILS:');
+      console.error('Error object:', error);
+      console.error('Error name:', error?.name);
+      console.error('Error message:', error?.message);
+      console.error('Error code:', error?.code);
+      console.error('Error stack:', error?.stack);
+      
+      if (error?.code) {
+        console.error('Firebase error code:', error.code);
+      }
+      
       toast({
         title: 'Failed to add transaction',
         description: error.message || 'Something went wrong. Please try again.',
         variant: 'destructive',
       });
     } finally {
+      console.log('🏁 Form submission completed, setting loading to false');
       setLoading(false);
     }
   };
@@ -200,6 +307,14 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         <DialogHeader>
           <DialogTitle>Add {formData.type === 'income' ? 'Income' : 'Expense'}</DialogTitle>
           <DialogDescription>Record a {formData.type} in INR. Attach receipts if needed.</DialogDescription>
+          <div className="flex gap-2">
+            <Button type="button" onClick={fillTestData} size="sm" variant="outline">
+              🧪 Fill Test Data
+            </Button>
+            <Button type="button" onClick={testFirebaseConnection} size="sm" variant="outline">
+              🔥 Test Firebase
+            </Button>
+          </div>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">

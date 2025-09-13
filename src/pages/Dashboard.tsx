@@ -90,13 +90,13 @@ export const Dashboard: React.FC = () => {
       {/* Welcome Section */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-foreground">
             {profileType === 'business' 
               ? `Welcome to ${userData?.displayName?.split(' ')[0] || 'Your'} Business Dashboard 💼`
               : `Hello, ${userData?.displayName?.split(' ')[0] || 'Hasini'} 👋 — Welcome Back`
             }
           </h2>
-          <p className="text-gray-600 mt-1">
+          <p className="text-muted-foreground mt-1">
             {profileType === 'business' 
               ? 'Monitor your business expenses, revenue, and team performance'
               : 'Track your personal expenses and manage your budget'
@@ -105,7 +105,7 @@ export const Dashboard: React.FC = () => {
         </div>
         <Button
           onClick={() => setShowAddModal(true)}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-lg"
         >
           <Plus size={20} className="mr-2" />
           {profileType === 'business' ? 'Add Business Expense' : 'Add Personal Expense'}
@@ -118,25 +118,25 @@ export const Dashboard: React.FC = () => {
           {/* Balance and Income/Expenses */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Total Balance */}
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <Card className="p-6 bg-card text-card-foreground">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 {profileType === 'business' ? 'Business Balance' : 'Total Balance'}
               </h3>
-              <p className="text-4xl font-bold text-gray-900 mb-4">
+              <p className="text-4xl font-bold text-foreground mb-4">
                 ₹{profileData.totalBalance.toLocaleString('en-IN')}
               </p>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     {profileType === 'business' ? 'Revenue' : 'Income'}
                   </p>
-                  <p className="text-xl font-semibold text-green-600">
+                  <p className="text-xl font-semibold text-green-600 dark:text-green-400">
                     ₹{profileData.income.toLocaleString('en-IN')}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Expenses</p>
-                  <p className="text-xl font-semibold text-red-600">
+                  <p className="text-sm text-muted-foreground">Expenses</p>
+                  <p className="text-xl font-semibold text-red-600 dark:text-red-400">
                     ₹{profileData.expenses.toLocaleString('en-IN')}
                   </p>
                 </div>
@@ -144,25 +144,25 @@ export const Dashboard: React.FC = () => {
             </Card>
 
             {/* Expenses Chart */}
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Expenses</h3>
+            <Card className="p-6 bg-card text-card-foreground">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Expenses</h3>
               <div className="flex items-center justify-center h-32">
                 {/* Simple pie chart representation */}
                 <div className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 via-orange-500 to-purple-500"></div>
               </div>
               <div className="mt-4 flex justify-center space-x-4 text-xs">
-                <span className="text-gray-600">Jan</span>
-                <span className="text-gray-600">Feb</span>
-                <span className="text-gray-600">Mar</span>
-                <span className="text-gray-600">Apr</span>
-                <span className="text-gray-600">May</span>
+                <span className="text-muted-foreground">Jan</span>
+                <span className="text-muted-foreground">Feb</span>
+                <span className="text-muted-foreground">Mar</span>
+                <span className="text-muted-foreground">Apr</span>
+                <span className="text-muted-foreground">May</span>
               </div>
             </Card>
           </div>
 
           {/* Expense Categories */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <Card className="p-6 bg-card text-card-foreground">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               {profileType === 'business' ? 'Business Categories' : 'Expense Categories'}
             </h3>
             <div className="grid grid-cols-2 gap-4">
@@ -176,18 +176,18 @@ export const Dashboard: React.FC = () => {
                       <IconComponent size={24} className="text-white" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{category.name}</h4>
-                      <p className="text-sm text-gray-600">Spent this month</p>
-                      <p className="text-lg font-semibold text-gray-900">
+                      <h4 className="font-medium text-foreground">{category.name}</h4>
+                      <p className="text-sm text-muted-foreground">Spent this month</p>
+                      <p className="text-lg font-semibold text-foreground">
                         ₹{category.spent.toLocaleString('en-IN')}
                       </p>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div className="w-full bg-muted rounded-full h-2 mt-1">
                         <div 
                           className={`${category.color} h-2 rounded-full transition-all duration-300`} 
                           style={{ width: `${Math.min(progressPercentage, 100)}%` }}
                         ></div>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         Budget: ₹{category.budget.toLocaleString('en-IN')}
                       </p>
                     </div>
@@ -200,12 +200,12 @@ export const Dashboard: React.FC = () => {
 
         {/* Right Column - Recent Transactions */}
         <div className="space-y-6">
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <Card className="p-6 bg-card text-card-foreground">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               {profileType === 'business' ? 'Business Transactions' : 'Recent Transactions'}
             </h3>
             <div className="space-y-1">
-              <div className="grid grid-cols-4 gap-4 text-sm font-medium text-gray-600 pb-2 border-b">
+              <div className="grid grid-cols-4 gap-4 text-sm font-medium text-muted-foreground pb-2 border-b border-border">
                 <span>Date</span>
                 <span>Description</span>
                 <span>Category</span>
@@ -213,11 +213,13 @@ export const Dashboard: React.FC = () => {
               </div>
               {recentTransactions.map((transaction) => (
                 <div key={transaction.id} className="grid grid-cols-4 gap-4 py-3 text-sm">
-                  <span className="text-gray-600">{transaction.date}</span>
-                  <span className="text-gray-900 truncate">{transaction.description}</span>
-                  <span className="text-gray-600">{transaction.category}</span>
+                  <span className="text-muted-foreground">{transaction.date}</span>
+                  <span className="text-foreground truncate">{transaction.description}</span>
+                  <span className="text-muted-foreground">{transaction.category}</span>
                   <span className={`text-right font-medium ${
-                    transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                    transaction.type === 'income' 
+                      ? 'text-green-600 dark:text-green-400' 
+                      : 'text-red-600 dark:text-red-400'
                   }`}>
                     {transaction.type === 'income' ? '+' : ''}₹{transaction.amount.toLocaleString('en-IN')}
                   </span>
@@ -225,14 +227,14 @@ export const Dashboard: React.FC = () => {
               ))}
             </div>
             {profileType === 'business' && (
-              <div className="mt-4 pt-4 border-t">
+              <div className="mt-4 pt-4 border-t border-border">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Monthly Revenue Target</span>
-                  <span className="font-medium text-green-600">₹500,000</span>
+                  <span className="text-muted-foreground">Monthly Revenue Target</span>
+                  <span className="font-medium text-green-600 dark:text-green-400">₹500,000</span>
                 </div>
                 <div className="flex justify-between text-sm mt-1">
-                  <span className="text-gray-600">Achieved This Month</span>
-                  <span className="font-medium text-blue-600">₹{profileData.income.toLocaleString('en-IN')} (90%)</span>
+                  <span className="text-muted-foreground">Achieved This Month</span>
+                  <span className="font-medium text-blue-600 dark:text-blue-400">₹{profileData.income.toLocaleString('en-IN')} (90%)</span>
                 </div>
               </div>
             )}

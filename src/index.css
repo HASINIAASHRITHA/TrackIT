@@ -98,21 +98,26 @@
   }
   
   .dark {
-    --background: 220 15% 10%;
-    --foreground: 0 0% 98%;
-    --background-secondary: 220 15% 13%;
+    --background: 220 15% 8%;
+    --foreground: 0 0% 95%;
+    --background-secondary: 220 15% 11%;
     
-    --card: 220 15% 13%;
-    --card-foreground: 0 0% 98%;
-    --muted: 220 14% 18%;
-    --muted-foreground: 220 8% 60%;
+    --card: 220 15% 11%;
+    --card-foreground: 0 0% 95%;
+    --muted: 220 14% 16%;
+    --muted-foreground: 220 8% 65%;
     
-    --border: 220 13% 20%;
-    --input: 220 13% 20%;
+    --border: 220 13% 18%;
+    --input: 220 13% 18%;
     
-    --glass-bg: rgba(13, 17, 23, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    --glass-bg: rgba(15, 19, 25, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+    
+    /* Ensure status colors work in dark mode */
+    --success: 142 71% 50%;
+    --destructive: 0 84% 65%;
+    --warning: 38 92% 55%;
   }
 }
 

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, Bell, Menu } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Bell, Menu, Sun, Moon } from 'lucide-react';
 import { ProfileToggle } from '@/components/molecules/ProfileToggle';
 import { SearchModal } from '@/components/molecules/SearchModal';
 import { NotificationCenter } from '@/components/molecules/NotificationCenter';
@@ -24,6 +24,26 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { user, userData } = useAuth();
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  // Check dark mode on mount
+  useEffect(() => {
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    setIsDark(isDarkMode);
+  }, []);
+
+  const toggleTheme = () => {
+    const newIsDark = !isDark;
+    setIsDark(newIsDark);
+    
+    if (newIsDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -74,6 +94,17 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             title="Search transactions and categories"
           >
             <Icon icon={Search} size="md" />
+          </Button>
+          
+          {/* Theme Toggle */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleTheme}
+            className="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10"
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            <Icon icon={isDark ? Sun : Moon} size="md" />
           </Button>
           
           {/* Notifications */}
